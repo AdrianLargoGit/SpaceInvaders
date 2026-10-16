@@ -1,0 +1,21 @@
+.alert {
+  display: inline-block;
+  padding: .6rem .8rem;
+  border-radius: .5rem;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+  background: #fee2e2;
+  font-weight: bold;
+}
+
+.alert-small {
+  display: inline-block;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.3rem;
+  border: 1px solid #fecaca;
+  color: #7f1d1d;
+  background: #fee2e2;
+  font-weight: bold;
+  font-size: 0.85em; /* slightly smaller for summaries */
+  line-height: 1.2;
+}
