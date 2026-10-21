@@ -7,10 +7,9 @@ import space_invaders.sprites.Alien;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-@DisplayName("Alien: inicialización y movimiento de caja negra")
+@DisplayName("Alien: caja negra de inicialización y movimiento")
 class AlienCajaNegraTest {
-
-    @DisplayName("Inicialización de Alien: límites válidos")
+    @DisplayName("Inicialización de Alien: valores límite robustos de peor caso")
     @ParameterizedTest
     @CsvSource({
             "AC-001, 179, 175, 179, 175",
@@ -22,32 +21,10 @@ class AlienCajaNegraTest {
             "AC-007, 179, 1, 179, 1",
             "AC-008, 179, 349, 179, 349",
             "AC-009, 179, 350, 179, 350",
-    })
-    void limitesNormales(String id, int x, int y, int expectedX, int expectedY) {
-        Alien objeto = new Alien(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Alien: una coordenada fuera del rango")
-    @ParameterizedTest
-    @CsvSource({
             "AC-010, -1, 175, 0, 175",
             "AC-011, 359, 175, 358, 175",
             "AC-012, 179, -1, 179, 0",
             "AC-013, 179, 351, 179, 350",
-    })
-    void robustezAdicional(String id, int x, int y, int expectedX, int expectedY) {
-        Alien objeto = new Alien(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Alien: combinaciones de límites válidos")
-    @ParameterizedTest
-    @CsvSource({
             "AC-014, 0, 0, 0, 0",
             "AC-015, 0, 1, 0, 1",
             "AC-016, 0, 349, 0, 349",
@@ -64,17 +41,6 @@ class AlienCajaNegraTest {
             "AC-027, 358, 1, 358, 1",
             "AC-028, 358, 349, 358, 349",
             "AC-029, 358, 350, 358, 350",
-    })
-    void normalPeorCasoAdicional(String id, int x, int y, int expectedX, int expectedY) {
-        Alien objeto = new Alien(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Alien: combinaciones con coordenadas inválidas")
-    @ParameterizedTest
-    @CsvSource({
             "AC-030, -1, -1, 0, 0",
             "AC-031, -1, 0, 0, 0",
             "AC-032, -1, 1, 0, 1",
@@ -94,16 +60,17 @@ class AlienCajaNegraTest {
             "AC-046, 359, 1, 358, 1",
             "AC-047, 359, 349, 358, 349",
             "AC-048, 359, 350, 358, 350",
-            "AC-049, 359, 351, 358, 350",
+            "AC-049, 359, 351, 358, 350"
     })
-    void robustoPeorCasoAdicional(String id, int x, int y, int expectedX, int expectedY) {
+    void inicializacionValoresLimiteRobustosPeorCaso(String id, int x, int y,
+                                                     int expectedX, int expectedY) {
         Alien objeto = new Alien(x, y);
         assertAll(id,
                 () -> assertEquals(expectedX, objeto.getX(), id + " X"),
                 () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
     }
 
-    @DisplayName("Movimiento de Alien: izquierda, reposo y derecha sin cambiar Y")
+    @DisplayName("Movimiento de Alien: equivalencia débil normal, izquierda, reposo y derecha")
     @ParameterizedTest
     @CsvSource({
             "AM-001, 179, 175, -1, 178, 175",

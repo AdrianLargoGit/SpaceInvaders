@@ -7,10 +7,9 @@ import space_invaders.sprites.Alien;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-@DisplayName("Bomb: inicialización de caja negra")
+@DisplayName("Bomb: caja negra de inicialización")
 class AlienBombCajaNegraTest {
-
-    @DisplayName("Inicialización de Bomb: límites válidos")
+    @DisplayName("Inicialización de Bomb: valores límite robustos de peor caso (49 casos)")
     @ParameterizedTest
     @CsvSource({
             "BC-001, 179, 175, 179, 175",
@@ -22,34 +21,10 @@ class AlienBombCajaNegraTest {
             "BC-007, 179, 1, 179, 1",
             "BC-008, 179, 349, 179, 349",
             "BC-009, 179, 350, 179, 350",
-    })
-    void bombaLimitesNormales(String id, int x, int y, int expectedX, int expectedY) {
-        Alien propietario = new Alien(179, 175);
-        Alien.Bomb objeto = propietario.new Bomb(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Bomb: una coordenada fuera del rango")
-    @ParameterizedTest
-    @CsvSource({
             "BC-010, -1, 175, 0, 175",
             "BC-011, 359, 175, 358, 175",
             "BC-012, 179, -1, 179, 0",
             "BC-013, 179, 351, 179, 350",
-    })
-    void bombaRobustezAdicional(String id, int x, int y, int expectedX, int expectedY) {
-        Alien propietario = new Alien(179, 175);
-        Alien.Bomb objeto = propietario.new Bomb(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Bomb: combinaciones de límites válidos")
-    @ParameterizedTest
-    @CsvSource({
             "BC-014, 0, 0, 0, 0",
             "BC-015, 0, 1, 0, 1",
             "BC-016, 0, 349, 0, 349",
@@ -66,18 +41,6 @@ class AlienBombCajaNegraTest {
             "BC-027, 358, 1, 358, 1",
             "BC-028, 358, 349, 358, 349",
             "BC-029, 358, 350, 358, 350",
-    })
-    void bombaNormalPeorCasoAdicional(String id, int x, int y, int expectedX, int expectedY) {
-        Alien propietario = new Alien(179, 175);
-        Alien.Bomb objeto = propietario.new Bomb(x, y);
-        assertAll(id,
-                () -> assertEquals(expectedX, objeto.getX(), id + " X"),
-                () -> assertEquals(expectedY, objeto.getY(), id + " Y"));
-    }
-
-    @DisplayName("Inicialización de Bomb: combinaciones con coordenadas inválidas")
-    @ParameterizedTest
-    @CsvSource({
             "BC-030, -1, -1, 0, 0",
             "BC-031, -1, 0, 0, 0",
             "BC-032, -1, 1, 0, 1",
@@ -97,9 +60,10 @@ class AlienBombCajaNegraTest {
             "BC-046, 359, 1, 358, 1",
             "BC-047, 359, 349, 358, 349",
             "BC-048, 359, 350, 358, 350",
-            "BC-049, 359, 351, 358, 350",
+            "BC-049, 359, 351, 358, 350"
     })
-    void bombaRobustoPeorCasoAdicional(String id, int x, int y, int expectedX, int expectedY) {
+    void inicializacionValoresLimiteRobustosPeorCaso(String id, int x, int y,
+                                                     int expectedX, int expectedY) {
         Alien propietario = new Alien(179, 175);
         Alien.Bomb objeto = propietario.new Bomb(x, y);
         assertAll(id,
