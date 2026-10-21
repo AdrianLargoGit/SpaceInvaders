@@ -87,4 +87,21 @@ class AlienCajaNegraTest {
                 () -> assertEquals(expectedX, alien.getX(), id + " X"),
                 () -> assertEquals(expectedY, alien.getY(), id + " Y"));
     }
+
+    @DisplayName("Movimiento de Alien: valores especiales para magnitud de dos píxeles")
+    @ParameterizedTest
+    @CsvSource({
+            "AM-004, 179, 175, -2, 177, 175",
+            "AM-005, 179, 175,  2, 181, 175"
+    })
+    void movimientoValoresEspecialesMagnitud(String id, int x, int y, int direction,
+                                             int expectedX, int expectedY) {
+        Alien alien = new Alien(179, 175);
+        alien.setX(x);
+        alien.setY(y);
+        alien.act(direction);
+        assertAll(id,
+                () -> assertEquals(expectedX, alien.getX(), id + " X"),
+                () -> assertEquals(expectedY, alien.getY(), id + " Y"));
+    }
 }
