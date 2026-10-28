@@ -807,6 +807,62 @@ class BoardCajaNegraTest {
         );
     }
 
+    
+    @Test
+    @DisplayName("BA-014: dos aliens en borde izquierdo provocan un único descenso")
+    void updateAliensDosEnBordeIzquierdoUnSoloDescenso() {
+        Alien l = SoporteCajaNegra.alienEn(5, 50);
+        Alien m = SoporteCajaNegra.alienEn(0, 70);
+        Alien r = SoporteCajaNegra.alienEn(150, 90);
+
+        board.setAliens(new ArrayList<>(List.of(l, m, r)));
+        board.setDirection(-1);
+
+        SoporteCajaNegra.invocar(board, "update_aliens");
+
+        assertAll("BA-014",
+                () -> assertEquals(1, board.getDirection(),
+                        "BA-014 la dirección debe invertirse a +1"),
+                () -> assertEquals(50 + Commons.GO_DOWN, l.getY(),
+                        "BA-014 alien L debe descender una sola vez"),
+                () -> assertEquals(70 + Commons.GO_DOWN, m.getY(),
+                        "BA-014 alien M debe descender una sola vez"),
+                () -> assertEquals(90 + Commons.GO_DOWN, r.getY(),
+                        "BA-014 alien R debe descender una sola vez")
+        );
+    }
+
+    
+    @Test
+    @DisplayName("BA-015: alien invisible fuera del borde derecho no provoca inversión")
+    void updateAliensInvisibleBordeNoInvierte() {
+        Alien invisible = SoporteCajaNegra.alienEn(340, 90);
+        invisible.die();
+
+        Alien visible = SoporteCajaNegra.alienEn(100, 50);
+
+        board.setAliens(new ArrayList<>(List.of(invisible, visible)));
+        board.setDirection(1);
+
+        SoporteCajaNegra.invocar(board, "update_aliens");
+
+        assertAll("BA-015",
+                () -> assertFalse(invisible.isVisible(),
+                        "BA-015 el alien debe permanecer invisible"),
+                () -> assertEquals(1, board.getDirection(),
+                        "BA-015 la dirección debe mantenerse en +1"),
+                () -> assertEquals(101, visible.getX(),
+                        "BA-015 el alien visible debe avanzar hasta X=101"),
+                () -> assertEquals(50, visible.getY(),
+                        "BA-015 el alien visible no debe descender"),
+                () -> assertEquals(340, invisible.getX(),
+                        "BA-015 el alien invisible debe conservar su X"),
+                () -> assertEquals(90, invisible.getY(),
+                        "BA-015 el alien invisible debe conservar su Y")
+        );
+    }
+
+
 
     // =========================================================================
     // 4.3 BB - update_bomb
