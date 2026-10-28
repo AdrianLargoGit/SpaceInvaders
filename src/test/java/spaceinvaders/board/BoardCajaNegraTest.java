@@ -5,7 +5,6 @@ import main.Commons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -512,6 +511,66 @@ class BoardCajaNegraTest {
                 () -> assertEquals(1, board.getDeaths(), "BS-015 deaths esperado 1")
         );
     }
+    
+    @ParameterizedTest
+    @DisplayName("BS-016: colisión de disparo según coordenada Y")
+    @CsvSource({
+            "BS-016A,  80, false, 0, 76",
+            "BS-016B, 101, true,  1, 101",
+            "BS-016C, 110, true,  1, 110",
+            "BS-016D, 130, false, 0, 126"
+    })
+    void updateShotsColisionSegunY(
+            String id,
+            int shotY,
+            boolean expectedCollision,
+            int expectedDeaths,
+            int expectedShotY) {
+
+        Alien alien = SoporteCajaNegra.alienEn(100, 100);
+        board.setAliens(new ArrayList<>(List.of(alien)));
+        board.setDeaths(0);
+
+        Shot shot = new Shot();
+        shot.setX(106);
+        shot.setY(shotY);
+        board.setShot(shot);
+
+        SoporteCajaNegra.invocar(board, "update_shots");
+
+        assertAll(id,
+                () -> assertEquals(expectedDeaths, board.getDeaths(),
+                        id + " contador de aliens destruidos"),
+                () -> assertEquals(expectedCollision, alien.isDying(),
+                        id + " estado del alien"),
+                () -> assertEquals(!expectedCollision, shot.isVisible(),
+                        id + " visibilidad del disparo"),
+                () -> {
+                    if (!expectedCollision) {
+                        assertEquals(expectedShotY, shot.getY(),
+                                id + " posición Y del disparo");
+                    }
+                }
+        );
+    }
+    
+    @Test
+    @DisplayName("BS-017: disparo que alcanza exactamente Y=0 desaparece")
+    void updateShotsLimiteSuperiorExacto() {
+        Shot shot = new Shot();
+        shot.setX(20);
+        shot.setY(Commons.SHOT_SPEED);
+        board.setShot(shot);
+
+        SoporteCajaNegra.invocar(board, "update_shots");
+
+        assertAll("BS-017",
+                () -> assertFalse(board.getShot().isVisible(),
+                        "BS-017 el disparo debe desaparecer al alcanzar el límite superior")
+        );
+    }
+
+
 
     // =========================================================================
     // 4.3 BA - update_aliens
@@ -762,38 +821,108 @@ class BoardCajaNegraTest {
         );
     }
 
+ 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I1: Informativo zona límite invasión en y=278")
-    void informativoInvasionY278() {
+    @DisplayName("BA-I1: alien en Y=278 no provoca invasión")
+    void updateAliensNoInvasionY278() {
         Alien alien = SoporteCajaNegra.alienEn(179, 278);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I1 (y=278): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I1",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I2: Informativo zona límite invasión en y=290")
-    void informativoInvasionY290() {
+    @DisplayName("BA-I2: alien en Y=290 no provoca invasión")
+    void updateAliensNoInvasionY290() {
         Alien alien = SoporteCajaNegra.alienEn(179, 290);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I2 (y=290): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I2",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I3: Informativo zona límite invasión en y=302")
-    void informativoInvasionY302() {
+    @DisplayName("BA-I3: alien en Y=302 no provoca invasión")
+    void updateAliensNoInvasionY302() {
         Alien alien = SoporteCajaNegra.alienEn(179, 302);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I3 (y=302): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I3",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
+
+    
+    @Test
+    @DisplayName("BA-014: dos aliens en borde izquierdo provocan un único descenso")
+    void updateAliensDosEnBordeIzquierdoUnSoloDescenso() {
+        Alien l = SoporteCajaNegra.alienEn(5, 50);
+        Alien m = SoporteCajaNegra.alienEn(0, 70);
+        Alien r = SoporteCajaNegra.alienEn(150, 90);
+
+        board.setAliens(new ArrayList<>(List.of(l, m, r)));
+        board.setDirection(-1);
+
+        SoporteCajaNegra.invocar(board, "update_aliens");
+
+        assertAll("BA-014",
+                () -> assertEquals(1, board.getDirection(),
+                        "BA-014 la dirección debe invertirse a +1"),
+                () -> assertEquals(50 + Commons.GO_DOWN, l.getY(),
+                        "BA-014 alien L debe descender una sola vez"),
+                () -> assertEquals(70 + Commons.GO_DOWN, m.getY(),
+                        "BA-014 alien M debe descender una sola vez"),
+                () -> assertEquals(90 + Commons.GO_DOWN, r.getY(),
+                        "BA-014 alien R debe descender una sola vez")
+        );
+    }
+
+    
+    @Test
+    @DisplayName("BA-015: alien invisible fuera del borde derecho no provoca inversión")
+    void updateAliensInvisibleBordeNoInvierte() {
+        Alien invisible = SoporteCajaNegra.alienEn(340, 90);
+        invisible.die();
+
+        Alien visible = SoporteCajaNegra.alienEn(100, 50);
+
+        board.setAliens(new ArrayList<>(List.of(invisible, visible)));
+        board.setDirection(1);
+
+        SoporteCajaNegra.invocar(board, "update_aliens");
+
+        assertAll("BA-015",
+                () -> assertFalse(invisible.isVisible(),
+                        "BA-015 el alien debe permanecer invisible"),
+                () -> assertEquals(1, board.getDirection(),
+                        "BA-015 la dirección debe mantenerse en +1"),
+                () -> assertEquals(101, visible.getX(),
+                        "BA-015 el alien visible debe avanzar hasta X=101"),
+                () -> assertEquals(50, visible.getY(),
+                        "BA-015 el alien visible no debe descender"),
+                () -> assertEquals(340, invisible.getX(),
+                        "BA-015 el alien invisible debe conservar su X"),
+                () -> assertEquals(90, invisible.getY(),
+                        "BA-015 el alien invisible debe conservar su Y")
+        );
+    }
+
+
 
     // =========================================================================
     // 4.3 BB - update_bomb
