@@ -5,7 +5,6 @@ import main.Commons;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -762,38 +761,52 @@ class BoardCajaNegraTest {
         );
     }
 
+ 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I1: Informativo zona límite invasión en y=278")
-    void informativoInvasionY278() {
+    @DisplayName("BA-I1: alien en Y=278 no provoca invasión")
+    void updateAliensNoInvasionY278() {
         Alien alien = SoporteCajaNegra.alienEn(179, 278);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I1 (y=278): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I1",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I2: Informativo zona límite invasión en y=290")
-    void informativoInvasionY290() {
+    @DisplayName("BA-I2: alien en Y=290 no provoca invasión")
+    void updateAliensNoInvasionY290() {
         Alien alien = SoporteCajaNegra.alienEn(179, 290);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I2 (y=290): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I2",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
 
     @Test
-    @Tag("informativo")
-    @DisplayName("BA-I3: Informativo zona límite invasión en y=302")
-    void informativoInvasionY302() {
+    @DisplayName("BA-I3: alien en Y=302 no provoca invasión")
+    void updateAliensNoInvasionY302() {
         Alien alien = SoporteCajaNegra.alienEn(179, 302);
         board.setAliens(new ArrayList<>(List.of(alien)));
         board.setDirection(1);
+
         SoporteCajaNegra.invocar(board, "update_aliens");
-        System.out.println("BA-I3 (y=302): isInGame=" + board.isInGame() + ", getMessage='" + board.getMessage() + "'");
+
+        assertAll("BA-I3",
+                () -> assertTrue(board.isInGame(), "La partida debe continuar"),
+                () -> assertNotEquals("Invasion!", board.getMessage())
+        );
     }
+
 
     // =========================================================================
     // 4.3 BB - update_bomb
