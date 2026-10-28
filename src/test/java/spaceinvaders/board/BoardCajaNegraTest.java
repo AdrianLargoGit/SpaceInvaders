@@ -511,6 +511,66 @@ class BoardCajaNegraTest {
                 () -> assertEquals(1, board.getDeaths(), "BS-015 deaths esperado 1")
         );
     }
+    
+    @ParameterizedTest
+    @DisplayName("BS-016: colisión de disparo según coordenada Y")
+    @CsvSource({
+            "BS-016A,  80, false, 0, 76",
+            "BS-016B, 101, true,  1, 101",
+            "BS-016C, 110, true,  1, 110",
+            "BS-016D, 130, false, 0, 126"
+    })
+    void updateShotsColisionSegunY(
+            String id,
+            int shotY,
+            boolean expectedCollision,
+            int expectedDeaths,
+            int expectedShotY) {
+
+        Alien alien = SoporteCajaNegra.alienEn(100, 100);
+        board.setAliens(new ArrayList<>(List.of(alien)));
+        board.setDeaths(0);
+
+        Shot shot = new Shot();
+        shot.setX(106);
+        shot.setY(shotY);
+        board.setShot(shot);
+
+        SoporteCajaNegra.invocar(board, "update_shots");
+
+        assertAll(id,
+                () -> assertEquals(expectedDeaths, board.getDeaths(),
+                        id + " contador de aliens destruidos"),
+                () -> assertEquals(expectedCollision, alien.isDying(),
+                        id + " estado del alien"),
+                () -> assertEquals(!expectedCollision, shot.isVisible(),
+                        id + " visibilidad del disparo"),
+                () -> {
+                    if (!expectedCollision) {
+                        assertEquals(expectedShotY, shot.getY(),
+                                id + " posición Y del disparo");
+                    }
+                }
+        );
+    }
+    
+    @Test
+    @DisplayName("BS-017: disparo que alcanza exactamente Y=0 desaparece")
+    void updateShotsLimiteSuperiorExacto() {
+        Shot shot = new Shot();
+        shot.setX(20);
+        shot.setY(Commons.SHOT_SPEED);
+        board.setShot(shot);
+
+        SoporteCajaNegra.invocar(board, "update_shots");
+
+        assertAll("BS-017",
+                () -> assertFalse(board.getShot().isVisible(),
+                        "BS-017 el disparo debe desaparecer al alcanzar el límite superior")
+        );
+    }
+
+
 
     // =========================================================================
     // 4.3 BA - update_aliens
