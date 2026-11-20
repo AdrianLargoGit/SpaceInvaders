@@ -94,15 +94,29 @@ class PlayerCajaNegraTest {
     void actValoresLimiteRobustos(String id, int x0, String action) {
         Player player = new Player();
         player.setX(x0);
+        int yInicial = player.getY();
+
+        int dxEsperado = 0;
+
         if ("LEFT".equals(action)) {
-            player.keyPressed(SoporteCajaNegra.tecla(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT));
+            dxEsperado = -2;
+            player.keyPressed(SoporteCajaNegra.tecla(
+                    KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT));
         } else if ("RIGHT".equals(action)) {
-            player.keyPressed(SoporteCajaNegra.tecla(KeyEvent.KEY_PRESSED, KeyEvent.VK_RIGHT));
+            dxEsperado = 2;
+            player.keyPressed(SoporteCajaNegra.tecla(
+                    KeyEvent.KEY_PRESSED, KeyEvent.VK_RIGHT));
         }
+
+        int xEsperada = Math.max(0, Math.min(MAX_X, x0 + dxEsperado));
+
         player.act();
+
         assertAll(id,
-                () -> assertTrue(player.getX() >= 0 && player.getX() <= MAX_X,
-                        id + " getX debe estar dentro de [0, " + MAX_X + "], obtenido: " + player.getX())
+                () -> assertEquals(xEsperada, player.getX(),
+                        id + " posicion horizontal final"),
+                () -> assertEquals(yInicial, player.getY(),
+                        id + " la coordenada Y no debe cambiar")
         );
     }
 
@@ -111,17 +125,26 @@ class PlayerCajaNegraTest {
     void actLimiteIzquierdoTresVeces() {
         Player player = new Player();
         player.setX(0);
-        player.keyPressed(SoporteCajaNegra.tecla(KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT));
+        int yInicial = player.getY();
+
+        player.keyPressed(SoporteCajaNegra.tecla(
+                KeyEvent.KEY_PRESSED, KeyEvent.VK_LEFT));
+
         player.act();
         int x1 = player.getX();
+
         player.act();
         int x2 = player.getX();
+
         player.act();
         int x3 = player.getX();
+
         assertAll("PA-028",
-                () -> assertTrue(x1 >= 0, "PA-028 x1 debe ser >= 0, obtenido: " + x1),
-                () -> assertEquals(x1, x2, "PA-028 x1 y x2 deben ser iguales"),
-                () -> assertEquals(x2, x3, "PA-028 x2 y x3 deben ser iguales")
+                () -> assertEquals(0, x1, "PA-028 primer movimiento"),
+                () -> assertEquals(0, x2, "PA-028 segundo movimiento"),
+                () -> assertEquals(0, x3, "PA-028 tercer movimiento"),
+                () -> assertEquals(yInicial, player.getY(),
+                        "PA-028 la coordenada Y no debe cambiar")
         );
     }
 
@@ -130,17 +153,26 @@ class PlayerCajaNegraTest {
     void actLimiteDerechoTresVeces() {
         Player player = new Player();
         player.setX(MAX_X);
-        player.keyPressed(SoporteCajaNegra.tecla(KeyEvent.KEY_PRESSED, KeyEvent.VK_RIGHT));
+        int yInicial = player.getY();
+
+        player.keyPressed(SoporteCajaNegra.tecla(
+                KeyEvent.KEY_PRESSED, KeyEvent.VK_RIGHT));
+
         player.act();
         int x1 = player.getX();
+
         player.act();
         int x2 = player.getX();
+
         player.act();
         int x3 = player.getX();
+
         assertAll("PA-029",
-                () -> assertTrue(x1 <= MAX_X, "PA-029 x1 debe ser <= MAX_X, obtenido: " + x1),
-                () -> assertEquals(x1, x2, "PA-029 x1 y x2 deben ser iguales"),
-                () -> assertEquals(x2, x3, "PA-029 x2 y x3 deben ser iguales")
+                () -> assertEquals(MAX_X, x1, "PA-029 primer movimiento"),
+                () -> assertEquals(MAX_X, x2, "PA-029 segundo movimiento"),
+                () -> assertEquals(MAX_X, x3, "PA-029 tercer movimiento"),
+                () -> assertEquals(yInicial, player.getY(),
+                        "PA-029 la coordenada Y no debe cambiar")
         );
     }
 

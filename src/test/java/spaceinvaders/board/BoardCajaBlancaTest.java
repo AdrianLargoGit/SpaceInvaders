@@ -68,7 +68,7 @@ public class BoardCajaBlancaTest {
         }
         board.update_shots();
         int siguienteY = origen[1] - 4;
-        boolean sigueVisible = visible && indiceImpacto < 0 && siguienteY >= 0;
+        boolean sigueVisible = visible && indiceImpacto < 0 && siguienteY > 0;
         List<Object> esperado = new ArrayList<>(List.of(indiceImpacto >= 0 ? 1 : 0, sigueVisible));
         List<Object> obtenido = new ArrayList<>(List.of(board.getDeaths(), disparo.isVisible()));
         if (sigueVisible || !visible) {
